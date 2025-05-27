@@ -1,3 +1,4 @@
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Only POST requests are allowed' });
@@ -15,22 +16,16 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: "openai/gpt-3.5-turbo",
         messages: [
-          { role: "system", content: "You are a helpful voice assistant called Naya's Voice Assistant." },
+          { role: "system", content: "You are a helpful voice assistant called Nayas Voice Assistant." },
           { role: "user", content: prompt }
         ]
       })
     });
 
     const data = await response.json();
-
-    if (data && data.choices && data.choices[0]) {
-      return res.status(200).json({ reply: data.choices[0].message.content });
-    } else {
-      return res.status(500).json({ error: "Invalid response from OpenRouter" });
-    }
-
+    const reply = data.choices?.[0]?.message?.content || "Sorry, no response.";
+    res.status(200).json({ reply });
   } catch (error) {
-    console.error("API error:", error);
-    return res.status(500).json({ error: "Failed to fetch from OpenRouter" });
+    res.status(500).json({ error: "Failed to fetch from OpenRouter" });
   }
 }
